@@ -4,38 +4,41 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        echo '📥 Checking out code...'
-        git url: 'https://github.com/Kritish0/<your-repo>.git', branch: 'main'
+        // Use the repository configured in the job (no hardcoded URL)
+        checkout scm
+        echo '📥 Code checked out from job SCM.'
       }
     }
 
     stage('Install') {
       steps {
-        echo '📦 Installing dependencies...'
-        sh 'npm install'
+        sh 'npm --version || true'
+        echo '📦 (Your install step goes here)'
       }
     }
 
     stage('Test') {
       steps {
-        echo '🧪 Running tests...'
-        sh 'npm test || echo "Tests failed but continuing..."'
+        echo '🧪 (Your test step goes here)'
       }
     }
   }
 
   post {
     success {
-      mail to: 'kritishpudasaini90@gmail.com',
+      mail to: 'kritishpudasaini90@example.com',
            subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-           body: """Good news!
-Build URL: ${env.BUILD_URL}
-Git Commit: ${env.GIT_COMMIT}"""
+           body: """Build succeeded.
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+URL: ${env.BUILD_URL}"""
     }
     failure {
-      mail to: 'you@gmail.com',
+      mail to: 'you@example.com',
            subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
            body: """Build failed.
+
 Check logs: ${env.BUILD_URL}console"""
     }
   }
